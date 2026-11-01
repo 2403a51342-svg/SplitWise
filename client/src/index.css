@@ -1,0 +1,187 @@
+@import "tailwindcss";
+
+/* Dark mode is a class on <html>, toggled by the theme switch. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/*
+  Design tokens. Ink indigo + turmeric: the indigo carries text and the hero,
+  turmeric marks the one primary action on a screen, and green/coral are reserved
+  for the direction of money (owed to you / you owe).
+*/
+:root {
+  --paper: #f3f4f9;
+  --surface: #ffffff;
+  --surface-2: #eceef7;
+  --ink: #171a43;
+  --muted: #5b6088;
+  --line: #dcdff0;
+  --accent: #f4b02a;
+  --on-accent: #2a1c00;
+  --brand: #2c3394;
+  --pos: #0b7a47;
+  --neg: #c42f25;
+  --hero: #1b1f4b;
+  --on-hero: #f2f3ff;
+  --hero-muted: #aeb3e0;
+  --hero-pos: #7ee2a8;
+  --hero-neg: #ff9a8c;
+}
+
+.dark {
+  --paper: #0e1022;
+  --surface: #171a35;
+  --surface-2: #1f2345;
+  --ink: #eef0ff;
+  --muted: #9aa0cc;
+  --line: #2a2f5a;
+  --accent: #f6b93b;
+  --on-accent: #2a1c00;
+  --brand: #9aa4ff;
+  --pos: #5fd39a;
+  --neg: #ff8f80;
+  --hero: #1f2349;
+  --on-hero: #f2f3ff;
+  --hero-muted: #aeb3e0;
+  --hero-pos: #7ee2a8;
+  --hero-neg: #ff9a8c;
+}
+
+@theme inline {
+  --font-display: "Familjen Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Figtree", ui-sans-serif, system-ui, sans-serif;
+  --color-paper: var(--paper);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-accent: var(--accent);
+  --color-on-accent: var(--on-accent);
+  --color-brand: var(--brand);
+  --color-pos: var(--pos);
+  --color-neg: var(--neg);
+  --color-hero: var(--hero);
+  --color-on-hero: var(--on-hero);
+  --color-hero-muted: var(--hero-muted);
+  --color-hero-pos: var(--hero-pos);
+  --color-hero-neg: var(--hero-neg);
+}
+
+html {
+  background: var(--paper);
+  color-scheme: light;
+}
+html.dark {
+  color-scheme: dark;
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  font-variant-numeric: tabular-nums;
+}
+
+:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+
+@layer components {
+  .panel {
+    @apply rounded-3xl border border-line bg-surface p-5 sm:p-6;
+  }
+
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  .btn-accent {
+    @apply bg-accent text-on-accent hover:brightness-95;
+  }
+  .btn-ghost {
+    @apply border border-line bg-surface text-ink hover:bg-surface-2;
+  }
+  .btn-quiet {
+    @apply text-muted hover:bg-surface-2 hover:text-ink;
+  }
+  .btn-danger {
+    @apply text-neg hover:bg-neg/10;
+  }
+
+  .input {
+    @apply w-full rounded-xl border border-line bg-surface px-3.5 py-2.5 text-sm text-ink placeholder:text-muted/70;
+  }
+  .input:focus-visible {
+    outline-offset: 0;
+    border-color: var(--brand);
+  }
+
+  .chip {
+    @apply inline-flex items-center gap-1.5 rounded-full border border-line bg-surface px-3 py-1.5 text-sm font-medium transition-colors hover:bg-surface-2;
+  }
+  .chip[aria-pressed="true"] {
+    @apply border-brand bg-brand/10 text-ink;
+  }
+}
+
+/* ---- motion ------------------------------------------------------------ */
+
+/* The balance beam settles into its tilt once, when the dashboard loads. */
+.beam {
+  transition: transform 1.6s cubic-bezier(0.2, 0.9, 0.25, 1.12);
+  /* The transforms are written as translate(pivot) rotate(angle), so rotate about the SVG origin. */
+  transform-box: view-box;
+  transform-origin: 0 0;
+}
+
+/* A new expense from a friend glows briefly so you can see what just arrived. */
+@keyframes row-flash {
+  0%, 60% { background-color: color-mix(in oklab, var(--accent) 28%, transparent); }
+  100% { background-color: transparent; }
+}
+.row-flash {
+  animation: row-flash 2.4s ease-out;
+}
+
+@keyframes sheet-in {
+  from { opacity: 0; transform: translateY(14px) scale(0.985); }
+  to { opacity: 1; transform: none; }
+}
+.sheet-in {
+  animation: sheet-in 0.18s ease-out;
+}
+
+@keyframes toast-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+.toast-in {
+  animation: toast-in 0.2s ease-out;
+}
+
+/* Dashes slide along the debt arrows to show which way the money moves. */
+@keyframes flow {
+  to { stroke-dashoffset: -14; }
+}
+.flow {
+  stroke-dasharray: 5 4;
+  animation: flow 1.1s linear infinite;
+}
+
+@keyframes pulse-soft {
+  50% { opacity: 0.55; }
+}
+.skeleton {
+  @apply rounded-2xl bg-surface-2;
+  animation: pulse-soft 1.4s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}

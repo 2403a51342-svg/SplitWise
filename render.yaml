@@ -1,0 +1,19 @@
+# Render Blueprint (free plan): one web service runs the API, WebSocket and the built frontend.
+# The free plan has no persistent disk, so the database resets when the service restarts.
+# That is fine for a portfolio demo: the demo data is re-created automatically on start.
+# For a real launch, use a paid instance, add a `disk` mounted at /var/data and set DATA_DIR=/var/data.
+services:
+  - type: web
+    name: splitmate
+    runtime: node
+    plan: free
+    buildCommand: npm run build
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_VERSION
+        value: 22.13.0
+      - key: JWT_SECRET
+        generateValue: true
+      - key: NODE_ENV
+        value: production
